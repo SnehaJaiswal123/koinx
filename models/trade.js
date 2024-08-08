@@ -1,3 +1,4 @@
+const { timeStamp } = require('console');
 const mongoose=require('mongoose');
 const { type } = require('os');
 
@@ -21,7 +22,7 @@ const tradeSchema = new mongoose.Schema({
         required:true
     },
     amount:{
-        type:String,
+        type:Number,
         required:true
     },
     price:Number
