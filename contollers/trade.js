@@ -4,7 +4,13 @@ const fs = require('fs');
 
 const parseCSV=async(req,res)=>{
   try{
+    //storing the file path locally
     const filePath=`./${req.file.path}`
+
+    if(!filePath)
+        return res.status(404).send({Error:"please provide CSV file"})
+
+    //Parsing CSV file using csv parser
     fs.createReadStream(filePath)
     .pipe(csv())
     .on('data',async (data) => {
@@ -23,6 +29,7 @@ const parseCSV=async(req,res)=>{
     });
   }
   catch(e){
+    console.log(e);  
     res.status(500).send({
         message:"Something went wrong in parsing csv file",
         error:e
@@ -33,10 +40,17 @@ const parseCSV=async(req,res)=>{
 const calculateBalace=async(req,res)=>{
     try{
                 
-            const {timestamp} = req.body
+            const {timestamp} = req.body;  //Destructuring timestamp from request body
+
+            //Checking if timestamp is provided
+            if(!timestamp)  
+                return res.status(404).send({Error:"please provide timestamp"})
+
+            //Converting timestamp in UTC Date format
             const date = new Date(timestamp)
 
-            const sold=await trade.aggregate([
+            // Using aggregation pipeline to filter and group data to find the assest wise account balance
+            const result=await trade.aggregate([
                 {
                     $match: {
                       "UTC_time":{
@@ -70,12 +84,16 @@ const calculateBalace=async(req,res)=>{
                     }
                 }
             ])
-            res.send(sold)
-            console.log(sold);
+            
+            // if there is no transaction in given timestamp
+            if(result.length==0) 
+                return res.status(404).send("No asset transactions")
+
+            res.status(200).send(result)
     }
     catch(e){
-        console.log(e);
-        res.send(e)       
+        console.log("Error in fetching data:",e);  
+        res.status(500).send("Error in fetching data:",e)       
     }
 }
 

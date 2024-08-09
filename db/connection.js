@@ -1,17 +1,14 @@
-const mongoose=require('mongoose')
+const mongoose = require("mongoose");
 
-async function db(){
-   try{
-    
-   const m =await mongoose.connect('mongodb://127.0.0.1:27017/koinX')
-   console.log("db connected"); 
-   }
-   catch(e){
-    console.log(e);
-    
-   }
+const connectDB=async()=>{
+    try{
+        const connectionInstance=await mongoose.connect(`${process.env.Mongo_URI}/${process.env.DB_Name}`)
+        console.log("DB Connected:",connectionInstance.connection.host);
+    }
+    catch(err){
+            console.log("error in connecting db:",err);
+    }
 }
 
-db()
-
-module.exports=db
+connectDB()
+module.export = connectDB
