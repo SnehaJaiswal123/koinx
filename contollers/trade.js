@@ -75,21 +75,32 @@ const calculateBalace=async(req,res)=>{
                 },
                 {
                     $addFields: {
-                      amount: { $subtract: ["$buy", "$sell"] }
+                      balance: { $subtract: ["$buy", "$sell"] }
                     }
                 },{
                     $project:{
                         _id:1,
-                        amount:1
+                        balance:1
                     }
                 }
             ])
             
             // if there is no transaction in given timestamp
             if(result.length==0) 
-                return res.status(404).send("No asset transactions")
+                return res.status(404).send("No asset transactions till this timestamp")
 
-            res.status(200).send(result)
+            const balances = {};
+
+            result.forEach((trade) => {
+                const { _id, balance } = trade;                
+                if (!balances[_id]) {
+                balances[_id] = 0;
+                }
+
+                balances[_id] = balance;
+            });
+
+            res.status(200).send(balances)
     }
     catch(e){
         console.log("Error in fetching data:",e);  
