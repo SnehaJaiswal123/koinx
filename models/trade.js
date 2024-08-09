@@ -1,12 +1,9 @@
-const { timeStamp } = require('console');
 const mongoose=require('mongoose');
-const { type } = require('os');
 
 const tradeSchema = new mongoose.Schema({
     userId:{
         type:String,
         required:true,
-        unique:true
     },
     UTC_time:{
         type:Date,
@@ -25,7 +22,10 @@ const tradeSchema = new mongoose.Schema({
         type:Number,
         required:true
     },
-    price:Number
+    price:{
+        type:Number,
+        required:true
+    }
 },
 {
     timestamps:true
